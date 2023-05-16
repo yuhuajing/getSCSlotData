@@ -40,13 +40,13 @@ func getConn(server string) *ethclient.Client {
 }
 
 func main() {
-	flag.StringVar(&ethServer, "ethServer", "", "")
-	flag.StringVar(&address, "address", "", "")
-	flag.IntVar(&slot, "slot", 0, "")
-	flag.IntVar(&highslot, "highslot", 0, "")
-	flag.Int64Var(&blockNum, "blockNum", 0, "")
-	flag.IntVar(&lowslot, "lowslot", 0, "")
-	flag.StringVar(&arrayslot, "arrayslot", "", "")
+	flag.StringVar(&ethServer, "ethServer", "", "The public Ethereum server to connect to")
+	flag.StringVar(&address, "address", "", "The smart contract address to get storage")
+	flag.IntVar(&slot, "slot", 0, "The singal slot to get storage")
+	flag.IntVar(&highslot, "highslot", 0, "The contiounus highest slot to get storage")
+	flag.Int64Var(&blockNum, "blockNum", 0, "The blocknum to get storage")
+	flag.IntVar(&lowslot, "lowslot", 0, "The contiounus lowest slot to get storage")
+	flag.StringVar(&arrayslot, "arrayslot", "", "The specific slot to get storage`1 2 3 4 5` ")
 	flag.Parse()
 
 	if address == "" || !checkContractAddress(address) {
