@@ -62,7 +62,7 @@ func main() {
 	} else if highslot > 0 && lowslot >= 0 {
 		for i := lowslot; i <= highslot; i++ {
 			fmt.Printf("highSlot provided, get slot %d of the address %s\n", i, naddress.Hex())
-			getSCstorage(naddress, slot)
+			getSCstorage(naddress, i)
 		}
 		return
 	} else if arrayslot != "" {
