@@ -21,6 +21,7 @@ var (
 	client                  *ethclient.Client
 	//account                 common.Address
 	ethServer string
+	blockNum  int64
 )
 
 func init() {
@@ -34,7 +35,7 @@ func getConn(server string) *ethclient.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("we have a connection")
+	//	fmt.Println("we have a connection")
 	return client
 }
 
@@ -43,26 +44,29 @@ func main() {
 	flag.StringVar(&address, "address", "", "")
 	flag.IntVar(&slot, "slot", 0, "")
 	flag.IntVar(&highslot, "highslot", 0, "")
+	flag.Int64Var(&blockNum, "blockNum", 0, "")
 	flag.IntVar(&lowslot, "lowslot", 0, "")
 	flag.StringVar(&arrayslot, "arrayslot", "", "")
 	flag.Parse()
+
 	if address == "" || !checkContractAddress(address) {
 		fmt.Println("--address should be provided or the address should be a smart contract address")
 		return
 	}
+
 	if ethServer != "" {
 		client = getConn(ethServer)
 	}
 	naddress := common.HexToAddress(address)
-	fmt.Println(naddress)
+	//	fmt.Println(naddress)
 	if slot > 0 {
-		fmt.Printf("signal Slot provided, get slot %d of the address %s\n", slot, naddress.Hex())
-		getSCstorage(naddress, slot)
+		//	fmt.Printf("signal Slot provided, get slot %d of the address %s\n", slot, naddress.Hex())
+		getSCstorage(naddress, slot, blockNum)
 		return
 	} else if highslot > 0 && lowslot >= 0 {
 		for i := lowslot; i <= highslot; i++ {
-			fmt.Printf("highSlot provided, get slot %d of the address %s\n", i, naddress.Hex())
-			getSCstorage(naddress, i)
+			//fmt.Printf("highSlot provided, get slot %d of the address %s\n", i, naddress.Hex())
+			getSCstorage(naddress, i, blockNum)
 		}
 		return
 	} else if arrayslot != "" {
@@ -73,13 +77,13 @@ func main() {
 				fmt.Println("error:", err)
 				return
 			}
-			fmt.Printf("arraySlot provided, get slot %d of the address %s\n", num, naddress.Hex())
-			getSCstorage(naddress, num)
+			//	fmt.Printf("arraySlot provided, get slot %d of the address %s\n", num, naddress.Hex())
+			getSCstorage(naddress, num, blockNum)
 		}
 		return
 	} else {
-		fmt.Printf("nothing provided,get slot 0 of the address %s\n", naddress.Hex())
-		getSCstorage(naddress, slot)
+		//	fmt.Printf("nothing provided,get slot 0 of the address %s\n", naddress.Hex())
+		getSCstorage(naddress, slot, blockNum)
 	}
 
 }
@@ -102,18 +106,28 @@ func checkContractAddress(addr string) bool {
 	}
 	isContract := len(bytecode) > 0
 	if isContract {
-		fmt.Println("SC address")
+		//fmt.Println("SC address")
 		return true
 	}
-	fmt.Println("Normal address")
+	fmt.Println("This is normal address, but we want a smart contract address")
 	return false
 }
 
-func getSCstorage(address common.Address, slot int) {
-	//for i := 0; i <= slot; i++ {
+func getSCstorage(address common.Address, slot int, blockNum int64) {
 	t := common.BigToHash(big.NewInt(int64(slot)))
-	res, _ := client.StorageAt(context.Background(), address, t, nil)
-	//fmt.Println(i)
-	fmt.Println(res)
-	//}
+	int256 := new(big.Int)
+	if blockNum != 0 {
+		//fmt.Printf("get slot %d of the address %s in the block %d\n", slot, address.Hex(), blockNum)
+		blocknumBigInt := big.NewInt(int64(blockNum))
+		res, _ := client.StorageAt(context.Background(), address, t, blocknumBigInt)
+		//	fmt.Println(res)
+		int256.SetBytes(res)
+	} else {
+		//fmt.Printf("get slot %d of the address %s in the latest block\n", slot, address.Hex())
+		res, _ := client.StorageAt(context.Background(), address, t, nil)
+		//	fmt.Println(res)
+		int256.SetBytes(res)
+	}
+	fmt.Printf("hexadecimal: 0x%x\n", int256)
+	// fmt.Printf("uint256: %v\n", int256)
 }
