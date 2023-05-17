@@ -128,6 +128,7 @@ func getSCstorage(address common.Address, slot int, blockNum int64) {
 		//	fmt.Println(res)
 		int256.SetBytes(res)
 	}
-	fmt.Printf("hexadecimal: 0x%x\n", int256)
+	fmt.Printf("0x%x\n", int256)
+	//fmt.Printf("hexadecimal: 0x%x\n", int256)
 	// fmt.Printf("uint256: %v\n", int256)
 }
