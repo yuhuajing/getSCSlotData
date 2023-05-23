@@ -14,19 +14,30 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+const (
+	ethServer  = "https://cloudflare-eth.com"
+	bscRpc     = "https://bsc-mainnet.nodereal.io/v1/64a9df0874fb4a93b9d0a3849de012d3"
+	polygonRpc = "https://polygon-mainnet.nodereal.io/v1/f510fc4d083b49d1ab383d25246cc7de"
+	opRpc      = "https://opt-mainnet.nodereal.io/v1/1fd7be3e976444759d636dd367aae9ac"
+	arbitrum   = "https://open-platform.nodereal.io/1fd7be3e976444759d636dd367aae9ac/arbitrum-nitro/"
+	avalanch   = "https://open-platform.nodereal.io/1fd7be3e976444759d636dd367aae9ac/avalanche-c/ext/bc/C/avax"
+	salana     = "https://open-platform.nodereal.io/1fd7be3e976444759d636dd367aae9ac/solana/"
+	near       = "https://open-platform.nodereal.io/1fd7be3e976444759d636dd367aae9ac/near/"
+	fantom     = "https://open-platform.nodereal.io/1fd7be3e976444759d636dd367aae9ac/fantom/"
+)
+
 var (
 	address                 string
 	slot, highslot, lowslot int
 	arrayslot               string
+	chain                   string
+	blockNum                int64
 	client                  *ethclient.Client
-	//account                 common.Address
-	ethServer string
-	blockNum  int64
 )
 
 func init() {
-	ethServer = "https://cloudflare-eth.com"
-	client = getConn(ethServer)
+	server := "https://cloudflare-eth.com"
+	client = getConn(server)
 	//account = common.HexToAddress("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
 }
 
@@ -40,14 +51,37 @@ func getConn(server string) *ethclient.Client {
 }
 
 func main() {
-	flag.StringVar(&ethServer, "ethServer", "", "The public Ethereum server to connect to")
+	flag.StringVar(&chain, "chain", "", "The public Ethereum server to connect to")
 	flag.StringVar(&address, "address", "", "The smart contract address to get storage")
 	flag.IntVar(&slot, "slot", 0, "The singal slot to get storage")
 	flag.IntVar(&highslot, "highslot", 0, "The contiounus highest slot to get storage")
 	flag.Int64Var(&blockNum, "blockNum", 0, "The blocknum to get storage")
 	flag.IntVar(&lowslot, "lowslot", 0, "The contiounus lowest slot to get storage")
-	flag.StringVar(&arrayslot, "arrayslot", "", "The specific slot to get storage`1 2 3 4 5` ")
+	flag.StringVar(&arrayslot, "arrayslot", "", "The specific slot to get storage like `1 2 3 4 5` ")
 	flag.Parse()
+
+	if chain != "" {
+		switch chain {
+		case "bsc":
+			client = getConn(bscRpc)
+		case "polygon":
+			client = getConn(polygonRpc)
+		case "optimism":
+			client = getConn(opRpc)
+		case "arbitrum":
+			client = getConn(arbitrum)
+		case "ethereum":
+			client = getConn(ethServer)
+			// case "avalanch":
+			// 	client = getConn(avalanch)
+			// case "solana":
+			// 	client = getConn(salana)
+			// case "near":
+			// 	client = getConn(near)
+			// case "fantom":
+			// 	client = getConn(fantom)
+		}
+	}
 
 	if address == "" || !checkContractAddress(address) {
 		fmt.Println("--address should be provided or the address should be a smart contract address")
