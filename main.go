@@ -1,14 +1,11 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
-	"math/big"
-	"regexp"
-	"strconv"
-	"strings"
+	"main/addresscheck"
+	"main/parseslot"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -16,6 +13,7 @@ import (
 
 const (
 	ethServer  = "https://cloudflare-eth.com"
+	goerliNet  = "https://goerli.infura.io/v3/d7b27eea18a54fb389c2562ba19f8e36"
 	bscRpc     = "https://bsc-mainnet.nodereal.io/v1/64a9df0874fb4a93b9d0a3849de012d3"
 	polygonRpc = "https://polygon-mainnet.nodereal.io/v1/f510fc4d083b49d1ab383d25246cc7de"
 	opRpc      = "https://opt-mainnet.nodereal.io/v1/1fd7be3e976444759d636dd367aae9ac"
@@ -72,6 +70,8 @@ func main() {
 			client = getConn(arbitrum)
 		case "ethereum":
 			client = getConn(ethServer)
+		case "goerli":
+			client = getConn(goerliNet)
 			// case "avalanch":
 			// 	client = getConn(avalanch)
 			// case "solana":
@@ -83,7 +83,7 @@ func main() {
 		}
 	}
 
-	if address == "" || !checkContractAddress(address) {
+	if address == "" || !addresscheck.CheckContractAddress(address, client) {
 		fmt.Println("--address should be provided or the address should be a smart contract address")
 		return
 	}
@@ -92,77 +92,11 @@ func main() {
 		client = getConn(ethServer)
 	}
 	naddress := common.HexToAddress(address)
-	//	fmt.Println(naddress)
-	if slot > 0 {
-		//	fmt.Printf("signal Slot provided, get slot %d of the address %s\n", slot, naddress.Hex())
-		getSCstorage(naddress, slot, blockNum)
-		return
-	} else if highslot > 0 && lowslot >= 0 {
-		for i := lowslot; i <= highslot; i++ {
-			//fmt.Printf("highSlot provided, get slot %d of the address %s\n", i, naddress.Hex())
-			getSCstorage(naddress, i, blockNum)
+	slotRes := parseslot.CheckParameter(naddress, blockNum, slot, highslot, lowslot, arrayslot, client)
+	if slotRes != nil {
+		err := parseslot.ParseslotData(slotRes)
+		if err != nil {
+			log.Fatal(err)
 		}
-		return
-	} else if arrayslot != "" {
-		strArray := strings.Split(arrayslot, " ")
-		for i := 0; i < len(strArray); i++ {
-			num, err := strconv.Atoi(strArray[i])
-			if err != nil {
-				fmt.Println("error:", err)
-				return
-			}
-			//	fmt.Printf("arraySlot provided, get slot %d of the address %s\n", num, naddress.Hex())
-			getSCstorage(naddress, num, blockNum)
-		}
-		return
-	} else {
-		//	fmt.Printf("nothing provided,get slot 0 of the address %s\n", naddress.Hex())
-		getSCstorage(naddress, slot, blockNum)
 	}
-
-}
-
-func checkAddress(addr string) bool {
-	// 16 hex 0-f
-	re := regexp.MustCompile("0x[0-9a-fA-F]{40}$")
-	return re.MatchString(addr)
-}
-
-// check the address whether is a smart contract address
-func checkContractAddress(addr string) bool {
-	if !checkAddress(addr) {
-		return false
-	}
-	address := common.HexToAddress(addr)
-	bytecode, err := client.CodeAt(context.Background(), address, nil) //nil is the latest block
-	if err != nil {
-		panic(err)
-	}
-	isContract := len(bytecode) > 0
-	if isContract {
-		//fmt.Println("SC address")
-		return true
-	}
-	fmt.Println("This is normal address, but we want a smart contract address")
-	return false
-}
-
-func getSCstorage(address common.Address, slot int, blockNum int64) {
-	t := common.BigToHash(big.NewInt(int64(slot)))
-	int256 := new(big.Int)
-	if blockNum != 0 {
-		//fmt.Printf("get slot %d of the address %s in the block %d\n", slot, address.Hex(), blockNum)
-		blocknumBigInt := big.NewInt(int64(blockNum))
-		res, _ := client.StorageAt(context.Background(), address, t, blocknumBigInt)
-		//	fmt.Println(res)
-		int256.SetBytes(res)
-	} else {
-		//fmt.Printf("get slot %d of the address %s in the latest block\n", slot, address.Hex())
-		res, _ := client.StorageAt(context.Background(), address, t, nil)
-		//	fmt.Println(res)
-		int256.SetBytes(res)
-	}
-	fmt.Printf("0x%x\n", int256)
-	//fmt.Printf("hexadecimal: 0x%x\n", int256)
-	// fmt.Printf("uint256: %v\n", int256)
 }
