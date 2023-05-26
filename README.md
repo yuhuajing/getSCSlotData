@@ -28,6 +28,8 @@ Usage of ./getSlotDataForMac:
         The contiounus lowest slot to get storage, default: 0.
   -slot int
         The singal slot to get storage, default: 0.
+  -h
+        Print the SC name if this shot data is a ERC20 or NFT token address.
 ```
 
 
@@ -47,7 +49,9 @@ switch xx{
 	case "arbitrum":
 			Get data from Arbitrum
     case "ethereum":
-			Get data from Ethereum
+			Get data from Ethereum Mainnet
+  case "goerli":
+			Get data from Ethereum Testnet Goerli
 }
 
 # Get smart contract slot data from Ethereum
@@ -55,7 +59,7 @@ switch xx{
 1. Get single slot data
 mac
 
-./getSlotDataForMac --chain="ethereum" --address="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" --slot=1 --blockNum=17269518
+./getSlotDataForMac --h --chain="ethereum" --address="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" --slot=1 --blockNum=17269518
 
 example for linux
 
