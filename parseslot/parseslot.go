@@ -18,6 +18,7 @@ func CheckParameter(naddress common.Address, blockNum int64, slot, highslot, low
 			log.Fatal(err)
 			return nil
 		}
+		//fmt.Println(string(slotInt))
 		resInt = append(resInt, slotInt)
 		return resInt
 	} else if highslot > 0 && lowslot >= 0 {

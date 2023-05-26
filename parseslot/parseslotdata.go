@@ -5,13 +5,14 @@ import (
 	"math/big"
 )
 
-func ParseslotData(slotdata [][]byte) error {
+func ParseslotData(slotdata [][]byte) *[]string {
 	int256 := new(big.Int)
+	resString := make([]string, 0)
 	for _, v := range slotdata {
 		int256.SetBytes(v)
-		//fmt.Printf("0x%x\n", int256)
-		resInt := fmt.Sprintf("0x%x", int256)
-		fmt.Println(resInt)
+		resInt := fmt.Sprintf("%x", int256)
+		resString = append(resString, resInt)
+		//fmt.Println(resInt)
 	}
-	return nil
+	return &resString
 }
