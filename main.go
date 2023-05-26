@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"main/addresscheck"
 	"main/config"
+	addresscheck "main/ethclient"
 	"main/parseslot"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,7 +25,7 @@ func main() {
 	flag.StringVar(&address, "address", "", "The smart contract address to get storage")
 	flag.IntVar(&slot, "slot", 0, "The singal slot to get storage")
 	flag.IntVar(&highslot, "highslot", 0, "The contiounus highest slot to get storage")
-	flag.Int64Var(&blockNum, "blockNum", 0, "The blocknum to get storage")
+	flag.Int64Var(&blockNum, "blockNum", -1, "The blocknum to get storage")
 	flag.IntVar(&lowslot, "lowslot", 0, "The contiounus lowest slot to get storage")
 	flag.StringVar(&arrayslot, "arrayslot", "", "The specific slot to get storage like `1 2 3 4 5` ")
 	human := flag.Bool("h", false, "Parse the slot data to a human readable data structure")
@@ -63,6 +63,10 @@ func main() {
 		return
 	}
 
+	if blockNum < 0 {
+		blockNum = addresscheck.GetLatestBlockNum(client)
+	}
+
 	naddress := common.HexToAddress(address)
 	slotRes := parseslot.CheckParameter(naddress, blockNum, slot, highslot, lowslot, arrayslot, client)
 	if slotRes != nil {
@@ -70,7 +74,7 @@ func main() {
 		for _, res := range *resString {
 			fmt.Println("0x" + res)
 			if *human {
-				tokenname := parseslot.ParseDataToHumanReadable(res, client)
+				tokenname := parseslot.ParseDataToHumanReadable(res, client, chain)
 				if tokenname != "" {
 					fmt.Println(tokenname)
 				}
