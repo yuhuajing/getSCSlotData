@@ -1,7 +1,6 @@
 package parseslot
 
 import (
-	"log"
 	"main/slotstorage"
 	"strconv"
 	"strings"
@@ -15,7 +14,7 @@ func CheckParameter(naddress common.Address, blockNum int64, slot, highslot, low
 	if slot > 0 {
 		slotInt, err := slotstorage.GetSCstorage(naddress, slot, blockNum, client)
 		if err != nil {
-			log.Fatal(err)
+			//log.Fatal(err)
 			return nil
 		}
 		//fmt.Println(string(slotInt))
@@ -25,7 +24,7 @@ func CheckParameter(naddress common.Address, blockNum int64, slot, highslot, low
 		for i := lowslot; i <= highslot; i++ {
 			slotInt, err := slotstorage.GetSCstorage(naddress, i, blockNum, client)
 			if err != nil {
-				log.Fatal(err)
+				//log.Fatal(err)
 				return nil
 			}
 			resInt = append(resInt, slotInt)
@@ -37,7 +36,7 @@ func CheckParameter(naddress common.Address, blockNum int64, slot, highslot, low
 			num, _ := strconv.Atoi(strArray[i])
 			slotInt, err := slotstorage.GetSCstorage(naddress, num, blockNum, client)
 			if err != nil {
-				log.Fatal(err)
+				//log.Fatal(err)
 				return nil
 			}
 			resInt = append(resInt, slotInt)
@@ -46,7 +45,7 @@ func CheckParameter(naddress common.Address, blockNum int64, slot, highslot, low
 	} else {
 		slotInt, err := slotstorage.GetSCstorage(naddress, 0, 0, client)
 		if err != nil {
-			log.Fatal(err)
+			//log.Fatal(err)
 			return nil
 		}
 		resInt = append(resInt, slotInt)

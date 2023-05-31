@@ -7,6 +7,9 @@ import (
 )
 
 func GetLatestBlockNum(client *ethclient.Client) int64 {
-	blockNum, _ := client.BlockNumber(context.Background())
-	return int64(blockNum)
+	blockNum, err := client.BlockNumber(context.Background())
+	if err == nil {
+		return int64(blockNum)
+	}
+	return 0
 }

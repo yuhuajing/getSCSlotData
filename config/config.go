@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -22,40 +22,44 @@ const (
 	EtherMainApiKEY      = "KXTV96AQDTB5F1M6CKPSJH69ZJ7EF5R713"
 	EtherMainTokenUrl    = "https://api.etherscan.io/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1&apikey={apiKey}"
 	EtherMainNFTTokenUrl = "https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1&apikey={apiKey}"
+	EtherMainSCNameUrl   = "https://api.etherscan.io/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
+
 	//Ethereum Testnet Goerli
 	EtherGoerliTokenUrl    = "https://api-goerli.etherscan.io/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1&apikey={apiKey}"
 	EtherGoerliNFTTokenUrl = "https://api-goerli.etherscan.io/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1&apikey={apiKey}"
-
+	EtherGoerliSCNameUrl   = "https://api-goerli.etherscan.io/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
 	//BSC Mainnet
 	// trunk-ignore(gitleaks/generic-api-key)
 	BSCApiKey      = "HK7M7ZSD5MXW3U8X6IZ6732HV8KZVX449S"
 	BSCTokenUrl    = "https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1"
 	BSCNFTTokenUrl = "https://api.bscscan.com/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1"
-
+	BSCSCNameUrl   = "https://api.bscscan.com/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
 	// polygon mainnet
 	// trunk-ignore(gitleaks/generic-api-key)
 	PolygonMainApiKEY      = "7PMJA7NTUDF5BCEND1XA44MH7NC7MBCA6N"
 	PolygonMainTokenUrl    = "https://api.polygonscan.com/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
 	PolygonMainNFTTokenUrl = "https://api.polygonscan.com/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
-
+	PolygonMainSCNameUrl   = "https://api.polygonscan.com/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
 	// optimistic mainnet
 	// trunk-ignore(gitleaks/generic-api-key)
 	OptimisticMainApiKEY      = "1GMDJZ4CYZQIX4W6U5MEMDZAGQT64NVUWG"
 	OptimisticMainTokenUrl    = "https://api-optimistic.etherscan.io/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
 	OptimisticMainNFTTokenUrl = "https://api-optimistic.etherscan.io/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
-
+	OptimisticMainSCNameUrl   = "https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
 	//Arbitrum mainnet
 	//	https://api.arbiscan.io/api?module=account&action=tokentx&contractaddress=0xda10009cbd5d07dd0cecc66161fc93d7c9000da1&page=1&offset=1&sort=asc&apikey=
 	ArbitrumMainApiKEY      = "EHJDJWN9N6QI684FB9VH2QHDBWSSYNAVCW"
 	ArbitrumMainTokenUrl    = "https://api.arbiscan.io/api?module=account&action=tokentx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
 	ArbitrumMainNFTTokenUrl = "https://api.arbiscan.io/api?module=account&action=tokennfttx&contractaddress={address}&page=1&offset=1&sort=asc&apikey={apiKey}"
+	ArbitrumMainSCNameUrl   = "https://api.arbiscan.io/api?module=contract&action=getsourcecode&address={address}&apikey={apiKey}"
 )
 
 func GetConn(server string) *ethclient.Client {
 	client, err := ethclient.Dial(server)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("The server is not supported any more with err %s, replace a new server please.%s", err, server)
+		//log.Fatal(err)
+		return nil
 	}
-	//	fmt.Println("we have a connection")
 	return client
 }

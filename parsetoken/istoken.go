@@ -35,9 +35,9 @@ type ResponseData struct {
 
 func GetERC721FromEtherScan(addr, url, apiKey string) (*ResponseData, error) {
 	//url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=%s&page=1&offset=1&apikey=%s", addr, config.ApiKEY)
-	url = strings.ReplaceAll(url, "{addr}", addr)
+	url = strings.ReplaceAll(url, "{address}", addr)
 	if apiKey != "" {
-		url = strings.ReplaceAll(url, "{apikey}", apiKey)
+		url = strings.ReplaceAll(url, "{apiKey}", apiKey)
 	}
 	req, _ := http.NewRequest("GET", url, nil)
 	client := &http.Client{Timeout: time.Second * 5}

@@ -39,9 +39,9 @@ type NFTResponseData struct {
 func GetERC20FromEtherScan(addr, url, apiKey string) (*NFTResponseData, error) {
 	//url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=%s&page=1&offset=1&apikey=%s", addr, config.EtherMainApiKEY)
 
-	url = strings.ReplaceAll(url, "{addr}", addr)
+	url = strings.ReplaceAll(url, "{address}", addr)
 	if apiKey != "" {
-		url = strings.ReplaceAll(url, "{apikey}", apiKey)
+		url = strings.ReplaceAll(url, "{apiKey}", apiKey)
 	}
 	req, _ := http.NewRequest("GET", url, nil)
 	client := &http.Client{Timeout: time.Second * 5}
